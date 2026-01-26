@@ -1,0 +1,584 @@
+"""
+Vessel and Cargo Data Structures
+Extracted from the Cargill Datathon Presentation
+"""
+
+# Cargill Fleet - 4 Vessels
+CARGILL_VESSELS = [
+    {
+        'name': 'ANN BELL',
+        'dwt': 180803,
+        'hire_rate': 11750,
+        'war_laden_speed': 13.5,
+        'war_laden_vlsf': 60,
+        'war_laden_mgo': 2.0,
+        'war_ballast_speed': 14.5,
+        'war_ballast_vlsf': 55,
+        'war_ballast_mgo': 2.0,
+        'eco_laden_speed': 12.0,
+        'eco_laden_vlsf': 42,
+        'eco_laden_mgo': 2.0,
+        'eco_ballast_speed': 12.5,
+        'eco_ballast_vlsf': 38,
+        'eco_ballast_mgo': 2.0,
+        'port_vlsf': 2.0,  # Idle consumption
+        'port_mgo': 3.0,   # Working consumption
+        'current_port': 'QINGDAO',
+        'etd': '2026-02-25',
+        'bunker_vlsf': 401.3,
+        'bunker_mgo': 45.1
+    },
+    {
+        'name': 'OCEAN HORIZON',
+        'dwt': 181550,
+        'hire_rate': 15750,
+        'war_laden_speed': 13.8,
+        'war_laden_vlsf': 61,
+        'war_laden_mgo': 1.8,
+        'war_ballast_speed': 14.8,
+        'war_ballast_vlsf': 56.5,
+        'war_ballast_mgo': 1.8,
+        'eco_laden_speed': 12.3,
+        'eco_laden_vlsf': 43.0,
+        'eco_laden_mgo': 1.8,
+        'eco_ballast_speed': 12.8,
+        'eco_ballast_vlsf': 39.5,
+        'eco_ballast_mgo': 1.8,
+        'port_vlsf': 1.8,
+        'port_mgo': 3.2,
+        'current_port': 'MAP TA PHUT',
+        'etd': '2026-03-01',
+        'bunker_vlsf': 265.8,
+        'bunker_mgo': 64.3
+    },
+    {
+        'name': 'PACIFIC GLORY',
+        'dwt': 182320,
+        'hire_rate': 14800,
+        'war_laden_speed': 13.5,
+        'war_laden_vlsf': 59,
+        'war_laden_mgo': 1.9,
+        'war_ballast_speed': 14.2,
+        'war_ballast_vlsf': 54,
+        'war_ballast_mgo': 1.9,
+        'eco_laden_speed': 12.2,
+        'eco_laden_vlsf': 44,
+        'eco_laden_mgo': 1.9,
+        'eco_ballast_speed': 12.7,
+        'eco_ballast_vlsf': 40,
+        'eco_ballast_mgo': 1.9,
+        'port_vlsf': 2.0,
+        'port_mgo': 3.0,
+        'current_port': 'GWANGYANG',
+        'etd': '2026-03-10',
+        'bunker_vlsf': 601.9,
+        'bunker_mgo': 98.1
+    },
+    {
+        'name': 'GOLDEN ASCENT',
+        'dwt': 179965,
+        'hire_rate': 13950,
+        'war_laden_speed': 13.0,
+        'war_laden_vlsf': 58,
+        'war_laden_mgo': 2.0,
+        'war_ballast_speed': 14.0,
+        'war_ballast_vlsf': 53,
+        'war_ballast_mgo': 2.0,
+        'eco_laden_speed': 11.8,
+        'eco_laden_vlsf': 41,
+        'eco_laden_mgo': 2.0,
+        'eco_ballast_speed': 12.3,
+        'eco_ballast_vlsf': 37,
+        'eco_ballast_mgo': 2.0,
+        'port_vlsf': 1.9,
+        'port_mgo': 3.1,
+        'current_port': 'FANGCHENG',
+        'etd': '2026-03-08',
+        'bunker_vlsf': 793.3,
+        'bunker_mgo': 17.1
+    }
+]
+
+# Cargill Committed Cargoes - 3 Cargoes
+CARGILL_CARGOES = [
+    {
+        'name': 'BAUXITE_KAMSAR_QINGDAO',
+        'customer': 'EGA',
+        'commodity': 'Bauxite',
+        'quantity': 180000,
+        'laycan_start': '2026-04-02',
+        'laycan_end': '2026-04-10',
+        'freight_rate': 23,  # $/MT
+        'load_port': 'KAMSAR',
+        'discharge_port': 'QINGDAO',
+        'load_rate': 30000,  # MT/day PWWD SHINC
+        'load_tt': 12/24,  # 12 hours in days
+        'discharge_rate': 25000,  # MT/day PWWD SHINC
+        'discharge_tt': 12/24,  # 12 hours
+        'port_cost': 0,  # Borne by charterer
+        'commission_rate': 0.0125  # 1.25% broker commission
+    },
+    {
+        'name': 'IRONORE_HEDLAND_LIANYUNGANG',
+        'customer': 'BHP',
+        'commodity': 'Iron Ore',
+        'quantity': 160000,
+        'laycan_start': '2026-03-07',
+        'laycan_end': '2026-03-11',
+        'freight_rate': 9,  # $/MT
+        'load_port': 'PORT HEDLAND',
+        'discharge_port': 'LIANYUNGANG',
+        'load_rate': 80000,  # MT/day
+        'load_tt': 12/24,
+        'discharge_rate': 30000,  # MT/day
+        'discharge_tt': 24/24,  # 24 hours = 1 day
+        'port_cost': 260000 + 120000,  # USD at load + discharge
+        'commission_rate': 0.0375  # 3.75% to charterer
+    },
+    {
+        'name': 'IRONORE_ITAGUAI_QINGDAO',
+        'customer': 'CSN',
+        'commodity': 'Iron Ore',
+        'quantity': 180000,
+        'laycan_start': '2026-04-01',
+        'laycan_end': '2026-04-08',
+        'freight_rate': 22.30,  # $/MT
+        'load_port': 'ITAGUAI',
+        'discharge_port': 'QINGDAO',
+        'load_rate': 60000,  # MT/day
+        'load_tt': 6/24,  # 6 hours
+        'discharge_rate': 30000,  # MT/day
+        'discharge_tt': 24/24,  # 24 hours
+        'port_cost': 75000 + 90000,  # USD at load + discharge
+        'commission_rate': 0.0375  # 3.75% to charterer
+    }
+]
+
+# Market Vessels for potential hire (10 vessels available)
+MARKET_VESSELS = [
+    {
+        'name': 'ATLANTIC FORTUNE',
+        'dwt': 181200,
+        'hire_rate': 16000,  # Estimated from FFA 5TC
+        'current_port': 'PARADIP',
+        'etd': '2026-03-02',
+        'war_laden_speed': 13.8,
+        'war_laden_vlsf': 60,
+        'war_laden_mgo': 2.0,
+        'war_ballast_speed': 14.6,
+        'war_ballast_vlsf': 56,
+        'war_ballast_mgo': 2.0,
+        'eco_laden_speed': 12.3,
+        'eco_laden_vlsf': 43,
+        'eco_laden_mgo': 2.0,
+        'eco_ballast_speed': 12.9,
+        'eco_ballast_vlsf': 39.5,
+        'eco_ballast_mgo': 2.0,
+        'port_vlsf': 2.0,
+        'port_mgo': 3.0,
+        'bunker_vlsf': 512.4,
+        'bunker_mgo': 38.9
+    },
+    {
+        'name': 'PACIFIC VANGUARD',
+        'dwt': 182050,
+        'hire_rate': 16000,  # Estimated from FFA 5TC
+        'current_port': 'CAOFEIDIAN',
+        'etd': '2026-02-26',
+        'war_laden_speed': 13.6,
+        'war_laden_vlsf': 59,
+        'war_laden_mgo': 1.9,
+        'war_ballast_speed': 14.3,
+        'war_ballast_vlsf': 54,
+        'war_ballast_mgo': 1.9,
+        'eco_laden_speed': 12.0,
+        'eco_laden_vlsf': 42,
+        'eco_laden_mgo': 1.9,
+        'eco_ballast_speed': 12.5,
+        'eco_ballast_vlsf': 38,
+        'eco_ballast_mgo': 1.9,
+        'port_vlsf': 1.9,
+        'port_mgo': 3.0,
+        'bunker_vlsf': 420.3,
+        'bunker_mgo': 51.0
+    },
+    {
+        'name': 'CORAL EMPEROR',
+        'dwt': 180450,
+        'hire_rate': 15800,  # Estimated from FFA 5TC
+        'current_port': 'ROTTERDAM',
+        'etd': '2026-03-05',
+        'war_laden_speed': 13.4,
+        'war_laden_vlsf': 58,
+        'war_laden_mgo': 2.0,
+        'war_ballast_speed': 14.1,
+        'war_ballast_vlsf': 53,
+        'war_ballast_mgo': 2.0,
+        'eco_laden_speed': 11.9,
+        'eco_laden_vlsf': 40,
+        'eco_laden_mgo': 2.0,
+        'eco_ballast_speed': 12.3,
+        'eco_ballast_vlsf': 36.5,
+        'eco_ballast_mgo': 2.0,
+        'port_vlsf': 2.0,
+        'port_mgo': 3.1,
+        'bunker_vlsf': 601.7,
+        'bunker_mgo': 42.3
+    },
+    {
+        'name': 'EVEREST OCEAN',
+        'dwt': 179950,
+        'hire_rate': 16200,  # Estimated from FFA 5TC
+        'current_port': 'XIAMEN',
+        'etd': '2026-03-03',
+        'war_laden_speed': 13.7,
+        'war_laden_vlsf': 61,
+        'war_laden_mgo': 1.8,
+        'war_ballast_speed': 14.5,
+        'war_ballast_vlsf': 56.5,
+        'war_ballast_mgo': 1.8,
+        'eco_laden_speed': 12.4,
+        'eco_laden_vlsf': 43.5,
+        'eco_laden_mgo': 1.8,
+        'eco_ballast_speed': 12.8,
+        'eco_ballast_vlsf': 39,
+        'eco_ballast_mgo': 1.8,
+        'port_vlsf': 1.8,
+        'port_mgo': 3.0,
+        'bunker_vlsf': 478.2,
+        'bunker_mgo': 56.4
+    },
+    {
+        'name': 'POLARIS SPIRIT',
+        'dwt': 181600,
+        'hire_rate': 16100,  # Estimated from FFA 5TC
+        'current_port': 'KANDLA',
+        'etd': '2026-02-28',
+        'war_laden_speed': 13.9,
+        'war_laden_vlsf': 62,
+        'war_laden_mgo': 1.9,
+        'war_ballast_speed': 14.7,
+        'war_ballast_vlsf': 57,
+        'war_ballast_mgo': 1.9,
+        'eco_laden_speed': 12.5,
+        'eco_laden_vlsf': 44,
+        'eco_laden_mgo': 1.9,
+        'eco_ballast_speed': 13.0,
+        'eco_ballast_vlsf': 40,
+        'eco_ballast_mgo': 1.9,
+        'port_vlsf': 2.0,
+        'port_mgo': 3.1,
+        'bunker_vlsf': 529.8,
+        'bunker_mgo': 47.1
+    },
+    {
+        'name': 'IRON CENTURY',
+        'dwt': 182100,
+        'hire_rate': 16000,  # Estimated from FFA 5TC
+        'current_port': 'PORT TALBOT',
+        'etd': '2026-03-09',
+        'war_laden_speed': 13.5,
+        'war_laden_vlsf': 59,
+        'war_laden_mgo': 2.1,
+        'war_ballast_speed': 14.2,
+        'war_ballast_vlsf': 54,
+        'war_ballast_mgo': 2.1,
+        'eco_laden_speed': 12.0,
+        'eco_laden_vlsf': 41,
+        'eco_laden_mgo': 2.1,
+        'eco_ballast_speed': 12.5,
+        'eco_ballast_vlsf': 37.5,
+        'eco_ballast_mgo': 2.1,
+        'port_vlsf': 2.1,
+        'port_mgo': 3.2,
+        'bunker_vlsf': 365.6,
+        'bunker_mgo': 60.7
+    },
+    {
+        'name': 'MOUNTAIN TRADER',
+        'dwt': 180890,
+        'hire_rate': 15900,  # Estimated from FFA 5TC
+        'current_port': 'GWANGYANG',
+        'etd': '2026-03-06',
+        'war_laden_speed': 13.3,
+        'war_laden_vlsf': 58,
+        'war_laden_mgo': 2.0,
+        'war_ballast_speed': 14.0,
+        'war_ballast_vlsf': 53,
+        'war_ballast_mgo': 2.0,
+        'eco_laden_speed': 12.1,
+        'eco_laden_vlsf': 42,
+        'eco_laden_mgo': 2.0,
+        'eco_ballast_speed': 12.6,
+        'eco_ballast_vlsf': 38,
+        'eco_ballast_mgo': 2.0,
+        'port_vlsf': 2.0,
+        'port_mgo': 3.1,
+        'bunker_vlsf': 547.1,
+        'bunker_mgo': 32.4
+    },
+    {
+        'name': 'NAVIS PRIDE',
+        'dwt': 181400,
+        'hire_rate': 16200,  # Estimated from FFA 5TC
+        'current_port': 'MUNDRA',
+        'etd': '2026-02-27',
+        'war_laden_speed': 13.8,
+        'war_laden_vlsf': 61,
+        'war_laden_mgo': 1.8,
+        'war_ballast_speed': 14.5,
+        'war_ballast_vlsf': 56,
+        'war_ballast_mgo': 1.8,
+        'eco_laden_speed': 12.6,
+        'eco_laden_vlsf': 44,
+        'eco_laden_mgo': 1.8,
+        'eco_ballast_speed': 13.0,
+        'eco_ballast_vlsf': 39,
+        'eco_ballast_mgo': 1.8,
+        'port_vlsf': 1.8,
+        'port_mgo': 3.0,
+        'bunker_vlsf': 493.8,
+        'bunker_mgo': 45.2
+    },
+    {
+        'name': 'AURORA SKY',
+        'dwt': 179880,
+        'hire_rate': 15700,  # Estimated from FFA 5TC
+        'current_port': 'JINGTANG',
+        'etd': '2026-03-04',
+        'war_laden_speed': 13.4,
+        'war_laden_vlsf': 58,
+        'war_laden_mgo': 2.0,
+        'war_ballast_speed': 14.1,
+        'war_ballast_vlsf': 53,
+        'war_ballast_mgo': 2.0,
+        'eco_laden_speed': 12.0,
+        'eco_laden_vlsf': 41,
+        'eco_laden_mgo': 2.0,
+        'eco_ballast_speed': 12.5,
+        'eco_ballast_vlsf': 37.5,
+        'eco_ballast_mgo': 2.0,
+        'port_vlsf': 2.0,
+        'port_mgo': 3.1,
+        'bunker_vlsf': 422.7,
+        'bunker_mgo': 29.8
+    },
+    {
+        'name': 'ZENITH GLORY',
+        'dwt': 182500,
+        'hire_rate': 16300,  # Estimated from FFA 5TC
+        'current_port': 'VIZAG',
+        'etd': '2026-03-07',
+        'war_laden_speed': 13.9,
+        'war_laden_vlsf': 61,
+        'war_laden_mgo': 1.9,
+        'war_ballast_speed': 14.6,
+        'war_ballast_vlsf': 56.5,
+        'war_ballast_mgo': 1.9,
+        'eco_laden_speed': 12.4,
+        'eco_laden_vlsf': 43.5,
+        'eco_laden_mgo': 1.9,
+        'eco_ballast_speed': 12.9,
+        'eco_ballast_vlsf': 39,
+        'eco_ballast_mgo': 1.9,
+        'port_vlsf': 1.9,
+        'port_mgo': 3.1,
+        'bunker_vlsf': 502.3,
+        'bunker_mgo': 44.6
+    },
+    {
+        'name': 'TITAN LEGACY',
+        'dwt': 180650,
+        'hire_rate': 15800,  # Estimated from FFA 5TC
+        'current_port': 'JUBAIL',
+        'etd': '2026-03-01',
+        'war_laden_speed': 13.5,
+        'war_laden_vlsf': 59,
+        'war_laden_mgo': 2.0,
+        'war_ballast_speed': 14.2,
+        'war_ballast_vlsf': 54,
+        'war_ballast_mgo': 2.0,
+        'eco_laden_speed': 12.2,
+        'eco_laden_vlsf': 42,
+        'eco_laden_mgo': 2.0,
+        'eco_ballast_speed': 12.7,
+        'eco_ballast_vlsf': 38,
+        'eco_ballast_mgo': 2.0,
+        'port_vlsf': 2.0,
+        'port_mgo': 3.0,
+        'bunker_vlsf': 388.5,
+        'bunker_mgo': 53.1
+    }
+]
+
+# Market Cargoes available for bidding (8 cargoes)
+MARKET_CARGOES = [
+    {
+        'name': 'MKT_IRONORE_DAMPIER_QINGDAO',
+        'customer': 'Rio Tinto',
+        'commodity': 'Iron Ore',
+        'quantity': 170000,
+        'laycan_start': '2026-03-12',
+        'laycan_end': '2026-03-18',
+        'freight_rate': 7.5,  # Estimated from FFA C5 route
+        'load_port': 'DAMPIER',
+        'discharge_port': 'QINGDAO',
+        'load_rate': 80000,
+        'load_tt': 12/24,
+        'discharge_rate': 30000,
+        'discharge_tt': 24/24,
+        'port_cost': 240000,
+        'commission_rate': 0.0375
+    },
+    {
+        'name': 'MKT_IRONORE_PONTAMADEIRA_CAOFEIDIAN',
+        'customer': 'Vale',
+        'commodity': 'Iron Ore',
+        'quantity': 190000,
+        'laycan_start': '2026-04-03',
+        'laycan_end': '2026-04-10',
+        'freight_rate': 19.0,  # Estimated from FFA C3 route
+        'load_port': 'PONTA DA MADEIRA',
+        'discharge_port': 'CAOFEIDIAN',
+        'load_rate': 60000,
+        'load_tt': 12/24,
+        'discharge_rate': 30000,
+        'discharge_tt': 24/24,
+        'port_cost': 75000 + 95000,
+        'commission_rate': 0.0375
+    },
+    {
+        'name': 'MKT_IRONORE_SALDANHA_TIANJIN',
+        'customer': 'Anglo American',
+        'commodity': 'Iron Ore',
+        'quantity': 180000,
+        'laycan_start': '2026-03-15',
+        'laycan_end': '2026-03-22',
+        'freight_rate': 19.5,  # Estimated from FFA (similar to C3)
+        'load_port': 'SALDANHA BAY',
+        'discharge_port': 'TIANJIN',
+        'load_rate': 55000,
+        'load_tt': 6/24,
+        'discharge_rate': 25000,
+        'discharge_tt': 24/24,
+        'port_cost': 180000,
+        'commission_rate': 0.0375
+    },
+    {
+        'name': 'MKT_COAL_TABONEO_KRISHNAPATNAM',
+        'customer': 'Adaro',
+        'commodity': 'Thermal Coal',
+        'quantity': 150000,
+        'laycan_start': '2026-04-10',
+        'laycan_end': '2026-04-15',
+        'freight_rate': 12.0,  # Regional short-haul rate
+        'load_port': 'TABONEO',
+        'discharge_port': 'KRISHNAPATNAM',
+        'load_rate': 35000,
+        'load_tt': 12/24,
+        'discharge_rate': 25000,
+        'discharge_tt': 24/24,
+        'port_cost': 90000,
+        'commission_rate': 0.025
+    },
+    {
+        'name': 'MKT_COAL_VANCOUVER_FANGCHENG',
+        'customer': 'Teck Resources',
+        'commodity': 'Coking Coal',
+        'quantity': 160000,
+        'laycan_start': '2026-03-18',
+        'laycan_end': '2026-03-26',
+        'freight_rate': 20.0,  # Long transpacific route
+        'load_port': 'VANCOUVER',
+        'discharge_port': 'FANGCHENG',
+        'load_rate': 45000,
+        'load_tt': 12/24,
+        'discharge_rate': 25000,
+        'discharge_tt': 24/24,
+        'port_cost': 180000 + 110000,
+        'commission_rate': 0.0375
+    },
+    {
+        'name': 'MKT_BAUXITE_KAMSAR_MANGALORE',
+        'customer': 'Guinea Alumina Corp',
+        'commodity': 'Bauxite',
+        'quantity': 175000,
+        'laycan_start': '2026-04-10',
+        'laycan_end': '2026-04-18',
+        'freight_rate': 22.0,  # West Africa routes
+        'load_port': 'KAMSAR',
+        'discharge_port': 'MANGALORE',
+        'load_rate': 30000,
+        'load_tt': 0,
+        'discharge_rate': 25000,
+        'discharge_tt': 12/24,
+        'port_cost': 150000,
+        'commission_rate': 0.025
+    },
+    {
+        'name': 'MKT_IRONORE_HEDLAND_GWANGYANG',
+        'customer': 'BHP',
+        'commodity': 'Iron Ore',
+        'quantity': 165000,
+        'laycan_start': '2026-03-09',
+        'laycan_end': '2026-03-15',
+        'freight_rate': 7.0,  # Regional Australia-Korea (C5-like)
+        'load_port': 'PORT HEDLAND',
+        'discharge_port': 'GWANGYANG',
+        'load_rate': 80000,
+        'load_tt': 12/24,
+        'discharge_rate': 30000,
+        'discharge_tt': 24/24,
+        'port_cost': 230000,
+        'commission_rate': 0.0375
+    },
+    {
+        'name': 'MKT_IRONORE_TUBARAO_TELUKRUBIAH',
+        'customer': 'Vale Malaysia',
+        'commodity': 'Iron Ore',
+        'quantity': 180000,
+        'laycan_start': '2026-03-25',
+        'laycan_end': '2026-04-02',
+        'freight_rate': 21.0,  # Brazil to Malaysia (long haul)
+        'load_port': 'TUBARAO',
+        'discharge_port': 'TELUK RUBIAH',
+        'load_rate': 60000,
+        'load_tt': 6/24,
+        'discharge_rate': 25000,
+        'discharge_tt': 24/24,
+        'port_cost': 85000 + 80000,
+        'commission_rate': 0.0375
+    }
+]
+
+# Helper function to get all vessels
+def get_all_vessels():
+    """Get list of all vessels (Cargill + Market)"""
+    return CARGILL_VESSELS + MARKET_VESSELS
+
+# Helper function to get all cargoes
+def get_all_cargoes():
+    """Get list of all cargoes (Cargill committed + Market)"""
+    return CARGILL_CARGOES + MARKET_CARGOES
+
+if __name__ == "__main__":
+    print("Data loaded successfully!")
+    print(f"\nCargill Fleet: {len(CARGILL_VESSELS)} vessels")
+    for v in CARGILL_VESSELS:
+        print(f"  - {v['name']}: {v['dwt']} DWT, Hire ${v['hire_rate']}/day, at {v['current_port']}")
+
+    print(f"\nMarket Vessels: {len(MARKET_VESSELS)} vessels")
+    for v in MARKET_VESSELS:
+        print(f"  - {v['name']}: {v['dwt']} DWT, Hire ${v['hire_rate']}/day, at {v['current_port']}")
+
+    print(f"\nCargill Committed Cargoes: {len(CARGILL_CARGOES)} cargoes")
+    for c in CARGILL_CARGOES:
+        print(f"  - {c['name']}: {c['quantity']} MT, ${c['freight_rate']}/MT, {c['load_port']}->{c['discharge_port']}")
+
+    print(f"\nMarket Cargoes: {len(MARKET_CARGOES)} cargoes")
+    for c in MARKET_CARGOES:
+        print(f"  - {c['name']}: {c['quantity']} MT, ${c['freight_rate']}/MT, {c['load_port']}->{c['discharge_port']}")
+
+    print(f"\n{'='*80}")
+    print(f"TOTAL: {len(get_all_vessels())} vessels × {len(get_all_cargoes())} cargoes = {len(get_all_vessels()) * len(get_all_cargoes())} combinations")
+    print(f"{'='*80}")
