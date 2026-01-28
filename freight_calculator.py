@@ -24,7 +24,6 @@ class FreightCalculator:
         self.bunker_prices = bunker_prices
         self.ffa_rates = ffa_rates or {}
         
-        # Create bidirectional distance lookup
         self._create_distance_lookup()
     
     def _create_distance_lookup(self):
@@ -36,7 +35,6 @@ class FreightCalculator:
             to_port = row['PORT_NAME_TO'].upper()
             distance = row['DISTANCE']
             
-            # Store both directions
             self.distance_dict[(from_port, to_port)] = distance
             self.distance_dict[(to_port, from_port)] = distance
     
@@ -115,7 +113,6 @@ class FreightCalculator:
         
         Returns: Dictionary with all calculations
         """
-        # Extract vessel parameters
         if use_economical_speed:
             ballast_speed = vessel['eco_ballast_speed']
             laden_speed = vessel['eco_laden_speed']
@@ -131,12 +128,10 @@ class FreightCalculator:
             laden_vlsf = vessel['war_laden_vlsf']
             laden_mgo = vessel['war_laden_mgo']
         
-        # Calculate steaming times
         ballast_days = self.calculate_steaming_time(ballast_distance, ballast_speed)
         laden_days = self.calculate_steaming_time(laden_distance, laden_speed)
         sea_days = ballast_days + laden_days
-        
-        # Calculate port time
+
         port_time = self.calculate_port_time(
             cargo['quantity'],
             cargo['load_rate'],
@@ -144,48 +139,36 @@ class FreightCalculator:
             cargo['load_tt'],
             cargo['discharge_tt']
         )
-        
-        # Total voyage duration
+
         total_days = sea_days + port_time['total_port_days']
         
-        # Calculate fuel consumption at sea
         vlsf_at_sea = (ballast_days * ballast_vlsf) + (laden_days * laden_vlsf)
         mgo_at_sea = (ballast_days * ballast_mgo) + (laden_days * laden_mgo)
         
-        # Calculate fuel consumption in port
         vlsf_in_port = port_time['total_port_days'] * vessel['port_vlsf']
         mgo_in_port = port_time['total_port_days'] * vessel['port_mgo']
-        
-        # Total fuel
+
         total_vlsf = vlsf_at_sea + vlsf_in_port
         total_mgo = mgo_at_sea + mgo_in_port
         
-        # Get bunker prices (use load port as reference)
         load_port_region = self._get_bunker_region(cargo['load_port'])
         vlsf_price = self.bunker_prices.get(load_port_region, {}).get('VLSF', 500)
         mgo_price = self.bunker_prices.get(load_port_region, {}).get('MGO', 650)
         
-        # Calculate costs
         hire_cost = vessel['hire_rate'] * total_days
         bunker_cost = (total_vlsf * vlsf_price) + (total_mgo * mgo_price)
         port_cost = cargo.get('port_cost', 0)
         
-        # Calculate revenue
         freight_revenue = cargo['quantity'] * cargo['freight_rate']
         
-        # Calculate commissions
         address_commission = freight_revenue * cargo.get('commission_rate', 0)
         
-        # Net revenue
         net_revenue = freight_revenue - address_commission
         
-        # Total costs
         total_costs = hire_cost + bunker_cost + port_cost
         
-        # Voyage profit
         voyage_profit = net_revenue - total_costs
         
-        # TCE (Time Charter Equivalent)
         tce = (net_revenue - bunker_cost - port_cost) / total_days if total_days > 0 else 0
         
         return {
@@ -217,34 +200,27 @@ class FreightCalculator:
         """Map port to bunker pricing region"""
         port_upper = port_name.upper()
         
-        # China/Asia regions
         if any(x in port_upper for x in ['QINGDAO', 'CAOFEIDIAN', 'LIANYUNGANG', 
                                          'FANGCHENG', 'SHANGHAI', 'JINGTANG']):
             return 'QINGDAO'
         
-        # Singapore region
         if any(x in port_upper for x in ['SINGAPORE', 'MAP TA PHUT', 'THAILAND']):
             return 'SINGAPORE'
         
-        # Australia
         if any(x in port_upper for x in ['HEDLAND', 'DAMPIER', 'AUSTRALIA']):
             return 'SINGAPORE'
         
-        # Brazil
         if any(x in port_upper for x in ['ITAGUAI', 'BRAZIL', 'TUBARAO', 'MADEIRA']):
-            return 'ROTTERDAM'  # Use European prices as proxy
+            return 'ROTTERDAM' 
         
-        # Africa
         if any(x in port_upper for x in ['KAMSAR', 'GUINEA', 'SALDANHA', 'RICHARDS']):
             return 'DURBAN'
         
-        # Default to Singapore
         return 'SINGAPORE'
 
 
 def load_bunker_prices() -> Dict:
     """Load bunker prices from the presentation data"""
-    # February 2026 prices
     return {
         'SINGAPORE': {'VLSF': 491, 'MGO': 654},
         'FUJAIRAH': {'VLSF': 479, 'MGO': 640},
@@ -256,21 +232,16 @@ def load_bunker_prices() -> Dict:
         'RICHARDS BAY': {'VLSF': 442, 'MGO': 520}
     }
 
-
-# Example usage
 if __name__ == "__main__":
-    # Load data
     distances = pd.read_csv('Port_Distances.csv')
     bunker_prices = load_bunker_prices()
 
-    # Initialize calculator
     calc = FreightCalculator(distances, bunker_prices)
 
     print("Freight Calculator Initialized!")
     print(f"Loaded {len(distances)} port distance records")
     print(f"Bunker prices for {len(bunker_prices)} regions")
 
-    # Test distance lookup
     test_distance = calc.get_distance('PORT HEDLAND', 'QINGDAO')
     if test_distance:
         print(f"\nTest: Port Hedland to Qingdao = {test_distance:.2f} NM")
