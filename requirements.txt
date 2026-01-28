@@ -7,3 +7,5 @@ shap>=0.42.0
 openpyxl>=3.0.0
 jupyter>=1.0.0
 notebook>=6.5.0
+openai>=1.0.0
+gradio>=4.0.0
