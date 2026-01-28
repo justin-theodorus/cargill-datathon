@@ -15,7 +15,6 @@ import re
 import pandas as pd
 from typing import Optional, List
 
-# Conditional imports for graceful degradation
 try:
     from openai import OpenAI
     OPENAI_AVAILABLE = True
@@ -30,11 +29,6 @@ except ImportError:
 
 from freight_calculator import FreightCalculator, load_bunker_prices
 from vessel_cargo_data import get_all_vessels, get_all_cargoes
-
-
-# ============================================================================
-# Context Builder
-# ============================================================================
 
 class ContextBuilder:
     """Builds structured context from analysis results for the LLM system prompt."""
@@ -52,7 +46,6 @@ class ContextBuilder:
 
         sections = []
 
-        # Role
         sections.append(
             "You are a senior freight trading assistant at Cargill Ocean Transportation. "
             "You help traders make data-driven decisions about vessel employment and voyage "
@@ -60,7 +53,6 @@ class ContextBuilder:
             "always citing specific numbers from the analysis. Use dollar formatting with commas."
         )
 
-        # Optimal allocation
         sections.append("\n## OPTIMAL ALLOCATION (Base Case)")
         sections.append(f"Total Portfolio Profit: ${optimal_allocation['total_profit']:,.0f}")
         sections.append("")
@@ -76,7 +68,6 @@ class ContextBuilder:
         if unalloc:
             sections.append(f"\nUnallocated vessels ({len(unalloc)}): {', '.join(unalloc)}")
 
-        # Top combinations
         sections.append("\n## TOP 10 COMBINATIONS BY TCE")
         top10 = all_results_df.nlargest(10, "tce")
         sections.append("| Vessel | Cargo | TCE ($/day) | Profit ($) | Days |")
@@ -87,7 +78,6 @@ class ContextBuilder:
                 f"{r['tce']:,.0f} | {r['voyage_profit']:,.0f} | {r['total_days']:.1f} |"
             )
 
-        # Scenario: port delays
         if scenario_port_delays is not None and len(scenario_port_delays) > 0:
             sections.append("\n## SCENARIO: PORT DELAYS IN CHINA")
             sections.append("| Delay (days) | Total Profit ($) | Loss ($) |")
@@ -97,7 +87,6 @@ class ContextBuilder:
                     f"| {r['delay_days']} | {r['total_profit']:,.0f} | {r['profit_loss']:,.0f} |"
                 )
 
-        # Scenario: bunker prices
         if scenario_bunker_prices is not None and len(scenario_bunker_prices) > 0:
             sections.append("\n## SCENARIO: BUNKER PRICE INCREASES")
             sections.append("| Increase (%) | Total Profit ($) | Loss ($) |")
@@ -107,7 +96,6 @@ class ContextBuilder:
                     f"| {r['price_increase_pct']}% | {r['total_profit']:,.0f} | {r['profit_loss']:,.0f} |"
                 )
 
-        # ML insights
         if ml_feature_importance is not None and len(ml_feature_importance) > 0:
             sections.append("\n## ML RISK MODEL")
             if ml_model_performance:
@@ -120,14 +108,12 @@ class ContextBuilder:
             for _, r in ml_feature_importance.head(5).iterrows():
                 sections.append(f"- {r['Feature']}: {r['Importance']:.3f}")
 
-        # Fleet overview
         sections.append("\n## FLEET (15 vessels)")
         for v in get_all_vessels():
             sections.append(
                 f"- {v['name']}: {v['dwt']:,} DWT, ${v['hire_rate']:,}/day, at {v['current_port']} (ETD {v['etd']})"
             )
 
-        # Cargoes overview
         sections.append("\n## CARGOES (11 total: 3 committed + 8 market)")
         for c in get_all_cargoes():
             sections.append(
@@ -135,7 +121,6 @@ class ContextBuilder:
                 f"{c['load_port']} -> {c['discharge_port']}"
             )
 
-        # Instructions
         sections.append("\n## INSTRUCTIONS")
         sections.append(
             "- Always cite specific dollar amounts and days from the data above.\n"
@@ -148,11 +133,6 @@ class ContextBuilder:
         )
 
         return "\n".join(sections)
-
-
-# ============================================================================
-# Voyage Tools (OpenAI Function Calling)
-# ============================================================================
 
 class VoyageTools:
     """Provides callable tools for OpenAI function calling."""
@@ -287,7 +267,6 @@ class VoyageTools:
 
         results = []
 
-        # Determine which allocations to test
         if vessel_name or cargo_name:
             rows = self._find_matching_rows(vessel_name, cargo_name)
             if rows.empty:
@@ -307,11 +286,9 @@ class VoyageTools:
             v_name = row["vessel_name"]
             c_name = row["cargo_name"]
 
-            # Get vessel hire rate
             vessel = self.vessels.get(v_name, {})
             hire_rate = vessel.get("hire_rate", hire_cost / base_days if base_days > 0 else 0)
 
-            # Check if cargo discharges in China
             cargo = None
             for c in get_all_cargoes():
                 if c["name"] == c_name:
@@ -321,7 +298,6 @@ class VoyageTools:
                 cp in cargo["discharge_port"].upper() for cp in china_ports
             )
 
-            # Apply adjustments
             adj_bunker = bunker_cost * (1 + bunker_price_change_pct / 100)
             adj_delay = port_delay_days if is_china else 0
             adj_days = base_days + adj_delay
@@ -416,11 +392,6 @@ class VoyageTools:
         }
         return json.dumps(detail)
 
-
-# ============================================================================
-# Main Chatbot Class
-# ============================================================================
-
 class VoyageChatbot:
     """
     Smart voyage chatbot with OpenAI GPT backend and rule-based fallback.
@@ -457,7 +428,6 @@ class VoyageChatbot:
             ml_model_performance,
         )
 
-        # Try to initialize OpenAI client
         api_key = openai_api_key or os.environ.get("OPENAI_API_KEY")
         self.use_openai = OPENAI_AVAILABLE and api_key is not None and len(api_key) > 0
 
@@ -477,10 +447,6 @@ class VoyageChatbot:
         """Reset conversation history."""
         self.conversation_history = []
 
-    # ------------------------------------------------------------------
-    # OpenAI backend
-    # ------------------------------------------------------------------
-
     def _chat_openai(self, user_message: str) -> str:
         """Send message to OpenAI with function calling."""
         self.conversation_history.append({"role": "user", "content": user_message})
@@ -496,15 +462,12 @@ class VoyageChatbot:
 
         assistant_msg = response.choices[0].message
 
-        # Handle tool calls (may need multiple rounds)
         max_rounds = 3
         rounds = 0
         while assistant_msg.tool_calls and rounds < max_rounds:
             rounds += 1
-            # Add assistant message with tool calls
             self.conversation_history.append(assistant_msg.model_dump())
 
-            # Execute each tool call
             for tc in assistant_msg.tool_calls:
                 result = self.tools.execute_tool(
                     tc.function.name, json.loads(tc.function.arguments)
@@ -513,7 +476,6 @@ class VoyageChatbot:
                     {"role": "tool", "tool_call_id": tc.id, "content": result}
                 )
 
-            # Get next response
             messages = [{"role": "system", "content": self.system_prompt}] + self.conversation_history
             response = self.client.chat.completions.create(
                 model=self.model, messages=messages,
@@ -525,10 +487,6 @@ class VoyageChatbot:
         reply = assistant_msg.content or ""
         self.conversation_history.append({"role": "assistant", "content": reply})
         return reply
-
-    # ------------------------------------------------------------------
-    # Rule-based fallback
-    # ------------------------------------------------------------------
 
     def _chat_fallback(self, user_message: str) -> str:
         """Rule-based fallback when OpenAI is not available."""
@@ -613,7 +571,6 @@ class VoyageChatbot:
                 "To compare, mention two vessel names. Example:\n"
                 "\"Compare OCEAN HORIZON vs NAVIS PRIDE for the bauxite cargo\""
             )
-        # Find cargo keyword
         cargo_kw = None
         for kw in ["bauxite", "iron", "coal", "kamsar", "taboneo", "hedland", "madeira"]:
             if kw in query.lower():
@@ -704,11 +661,6 @@ class VoyageChatbot:
         match = re.search(r"(\d+(?:\.\d+)?)", text)
         return float(match.group(1)) if match else None
 
-
-# ============================================================================
-# Gradio App
-# ============================================================================
-
 def create_gradio_app(chatbot: VoyageChatbot) -> "gr.Blocks":
     """Create Gradio chat interface."""
     if not GRADIO_AVAILABLE:
@@ -737,7 +689,6 @@ def create_gradio_app(chatbot: VoyageChatbot) -> "gr.Blocks":
         )
 
     return app
-
 
 def launch_chatbot(
     calculator: FreightCalculator,
@@ -775,11 +726,6 @@ def launch_chatbot(
             print(f"\nAssistant: {bot.chat(query)}\n")
 
     return bot
-
-
-# ============================================================================
-# CLI entry point
-# ============================================================================
 
 if __name__ == "__main__":
     import sys
