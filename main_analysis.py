@@ -16,7 +16,6 @@ def estimate_distance(from_port: str, to_port: str) -> float:
     """
     Estimate distance between two ports based on typical maritime routes
     """
-    # Port region classifications
     regions = {
         'CHINA': ['QINGDAO', 'TIANJIN', 'CAOFEIDIAN', 'LIANYUNGANG', 'FANGCHENG',
                   'SHANGHAI', 'JINGTANG', 'HONG KONG', 'XIAMEN'],
@@ -31,7 +30,6 @@ def estimate_distance(from_port: str, to_port: str) -> float:
         'NORTH_AMERICA': ['SEATTLE', 'VANCOUVER']
     }
 
-    # Find regions for each port
     from_region = None
     to_region = None
 
@@ -41,7 +39,6 @@ def estimate_distance(from_port: str, to_port: str) -> float:
         if any(p in to_port.upper() for p in ports):
             to_region = region
 
-    # Typical inter-region distances (nautical miles)
     distance_matrix = {
         ('CHINA', 'AUSTRALIA'): 3700,
         ('CHINA', 'BRAZIL'): 12000,
@@ -90,56 +87,48 @@ def estimate_distance(from_port: str, to_port: str) -> float:
         ('SOUTHEAST_ASIA', 'NORTH_AMERICA'): 7500,
     }
 
-    # Look up distance
     if from_region and to_region:
         key = tuple(sorted([from_region, to_region]))
         distance = distance_matrix.get(key)
         if distance:
             return distance
 
-    # Same region - short distance
     if from_region == to_region and from_region is not None:
         return 500
 
-    # Default fallback (conservative estimate for long routes)
     return 6000
 
 
 def normalize_port_name(port: str) -> str:
     """Normalize port names for distance lookup"""
     port_mapping = {
-        # Existing mappings
-        'KAMSAR': 'CONAKRY',  # Use nearby port as proxy
-        'MAP TA PHUT': 'LAEM CHABANG',  # Use nearby Thailand port
-        'GWANGYANG': 'BUSAN',  # Use nearby Korean port
-        'ITAGUAI': 'RIO DE JANEIRO',  # Use nearby Brazilian port
-        'DAMPIER': 'PORT HEDLAND',  # Both are in Western Australia
-        'PONTA DA MADEIRA': 'RIO DE JANEIRO',  # Brazilian port
-
-        # New mappings for market cargoes
-        'SALDANHA BAY': 'RICHARDS BAY',  # Both South Africa
-        'TABONEO': 'BALIKPAPAN',  # Both Indonesia
-        'KRISHNAPATNAM': 'VISAKHAPATNAM',  # Both India east coast
-        'VANCOUVER': 'SEATTLE',  # Both Pacific Northwest
-        'MANGALORE': 'COCHIN',  # Both India west coast
-        'TUBARAO': 'RIO DE JANEIRO',  # Brazilian port
-        'TELUK RUBIAH': 'SINGAPORE',  # Malaysian port near Singapore
-
-        # Additional vessel current ports
-        'CAOFEIDIAN': 'TIANJIN',  # Both North China
-        'PARADIP': 'VISAKHAPATNAM',  # Both India east coast
-        'KANDLA': 'MUNDRA',  # Both India west coast (Gujarat)
-        'VIZAG': 'VISAKHAPATNAM',  # Short form
-        'XIAMEN': 'XIAMEN',  # Keep Xiamen (it exists in table)
-        'HONG KONG': 'QINGDAO',  # South China - use major port
-        'JINGTANG': 'TIANJIN',  # Both North China
-        'JUBAIL': 'JEBEL ALI',  # Middle East Gulf
-        'PORT TALBOT': 'ROTTERDAM',  # Both Northwest Europe
-        'TELUK RUBIAH': 'SINGAPORE',  # Malaysia - close to Singapore
-        'BALIKPAPAN': 'SINGAPORE',  # Indonesia - regional hub
-        'SEATTLE': 'VANCOUVER (CANADA)',  # Pacific Northwest
-        'VANCOUVER': 'VANCOUVER (CANADA)',  # Ensure consistent naming
-        'COCHIN': 'MUNDRA'  # India west coast
+        'KAMSAR': 'CONAKRY', 
+        'MAP TA PHUT': 'LAEM CHABANG',  
+        'GWANGYANG': 'BUSAN',  
+        'ITAGUAI': 'RIO DE JANEIRO',  
+        'DAMPIER': 'PORT HEDLAND', 
+        'PONTA DA MADEIRA': 'RIO DE JANEIRO', 
+        'SALDANHA BAY': 'RICHARDS BAY',  
+        'TABONEO': 'BALIKPAPAN',  
+        'KRISHNAPATNAM': 'VISAKHAPATNAM',  
+        'VANCOUVER': 'SEATTLE',  
+        'MANGALORE': 'COCHIN',  
+        'TUBARAO': 'RIO DE JANEIRO',
+        'TELUK RUBIAH': 'SINGAPORE',  
+        'CAOFEIDIAN': 'TIANJIN',  
+        'PARADIP': 'VISAKHAPATNAM',  
+        'KANDLA': 'MUNDRA',  
+        'VIZAG': 'VISAKHAPATNAM', 
+        'XIAMEN': 'XIAMEN',
+        'HONG KONG': 'QINGDAO', 
+        'JINGTANG': 'TIANJIN',  
+        'JUBAIL': 'JEBEL ALI', 
+        'PORT TALBOT': 'ROTTERDAM',
+        'TELUK RUBIAH': 'SINGAPORE',  
+        'BALIKPAPAN': 'SINGAPORE',  
+        'SEATTLE': 'VANCOUVER (CANADA)',  
+        'VANCOUVER': 'VANCOUVER (CANADA)',  
+        'COCHIN': 'MUNDRA'  
     }
 
     port_upper = port.upper()
@@ -156,32 +145,26 @@ def calculate_all_combinations(calculator: FreightCalculator,
     Returns: DataFrame with all calculations
     """
     results = []
-    missing_routes = set()  # Track missing routes to report once
+    missing_routes = set()  
 
     for vessel in vessels:
         for cargo in cargoes:
             try:
-                # Normalize port names
                 vessel_port = normalize_port_name(vessel['current_port'])
                 load_port = normalize_port_name(cargo['load_port'])
                 discharge_port = normalize_port_name(cargo['discharge_port'])
 
-                # Get distances
                 ballast_dist = calculator.get_distance(vessel_port, load_port)
                 laden_dist = calculator.get_distance(load_port, discharge_port)
 
-                # Use estimated distances as fallback if not found
                 if ballast_dist is None:
                     missing_routes.add(f"{vessel_port} → {load_port}")
-                    # Estimate based on typical routes
                     ballast_dist = estimate_distance(vessel_port, load_port)
 
                 if laden_dist is None:
                     missing_routes.add(f"{load_port} → {discharge_port}")
-                    # Estimate based on typical routes
                     laden_dist = estimate_distance(load_port, discharge_port)
                 
-                # Calculate voyage economics
                 result = calculator.calculate_voyage_costs(
                     vessel=vessel,
                     cargo=cargo,
@@ -190,7 +173,6 @@ def calculate_all_combinations(calculator: FreightCalculator,
                     use_economical_speed=use_economical
                 )
                 
-                # Add additional info
                 result['vessel_current_port'] = vessel['current_port']
                 result['vessel_etd'] = vessel['etd']
                 result['cargo_laycan'] = f"{cargo['laycan_start']} to {cargo['laycan_end']}"
@@ -201,10 +183,9 @@ def calculate_all_combinations(calculator: FreightCalculator,
             except Exception as e:
                 print(f"Error calculating {vessel['name']} x {cargo['name']}: {str(e)}")
 
-    # Report missing routes summary
     if missing_routes:
         print(f"\nℹ️  Note: {len(missing_routes)} port-pair distances not in table (using estimates):")
-        for route in sorted(list(missing_routes)[:10]):  # Show first 10
+        for route in sorted(list(missing_routes)[:10]): 
             print(f"   • {route}")
         if len(missing_routes) > 10:
             print(f"   ... and {len(missing_routes) - 10} more")
@@ -222,7 +203,6 @@ def find_optimal_allocation(results_df: pd.DataFrame,
     Uses a greedy approach: assign each cargo to the vessel with highest TCE,
     ensuring no vessel is used twice
     """
-    # Sort by TCE descending
     sorted_results = results_df.sort_values('tce', ascending=False).copy()
     
     allocated_vessels = set()
@@ -230,19 +210,16 @@ def find_optimal_allocation(results_df: pd.DataFrame,
     allocation = []
     total_profit = 0
     
-    # Greedy allocation
     for _, row in sorted_results.iterrows():
         vessel = row['vessel_name']
         cargo = row['cargo_name']
         
-        # Check if vessel and cargo are still available
         if vessel not in allocated_vessels and cargo not in allocated_cargoes:
             allocation.append(row)
             allocated_vessels.add(vessel)
             allocated_cargoes.add(cargo)
             total_profit += row['voyage_profit']
             
-            # Stop when all cargoes are allocated
             if len(allocated_cargoes) == num_cargoes:
                 break
     
@@ -287,17 +264,14 @@ def main():
     print("Cargill Ocean Transportation Datathon 2026")
     print("Freight Calculator Analysis\n")
     
-    # Load data
     print("Loading data...")
     distances = pd.read_csv('Port_Distances.csv')
     bunker_prices = load_bunker_prices()
-    
-    # Initialize calculator
+ 
     calc = FreightCalculator(distances, bunker_prices)
     print(f"✓ Loaded {len(distances)} port distance records")
     print(f"✓ Loaded bunker prices for {len(bunker_prices)} regions\n")
     
-    # Calculate all combinations (including market vessels and cargoes)
     print("Calculating all vessel-cargo combinations...")
     all_vessels = get_all_vessels()
     all_cargoes = get_all_cargoes()
@@ -307,21 +281,17 @@ def main():
     results_df = calculate_all_combinations(calc, all_vessels, all_cargoes)
     print(f"✓ Calculated {len(results_df)} combinations\n")
 
-    # Find optimal allocation (only for Cargill committed cargoes)
     print("Finding optimal allocation for Cargill committed cargoes...")
     optimal = find_optimal_allocation(results_df,
                                      num_vessels=len(all_vessels),
                                      num_cargoes=len(CARGILL_CARGOES))
-    
-    # Print summary
+
     print_allocation_summary(optimal)
     
-    # Save detailed results
     output_file = 'voyage_calculations_detailed.csv'
     results_df.to_csv(output_file, index=False)
     print(f"\n✓ Detailed calculations saved to: {output_file}")
 
-    # Save allocation summary
     allocation_df = pd.DataFrame(optimal['allocation'])
     summary_file = 'optimal_allocation.csv'
     allocation_df.to_csv(summary_file, index=False)

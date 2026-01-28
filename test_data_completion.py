@@ -33,7 +33,6 @@ def test_vessel_structure():
         for field in required_fields:
             assert field in vessel, f"{vessel['name']} missing {field}"
 
-        # Check that hire_rate is not None
         assert vessel['hire_rate'] is not None, f"{vessel['name']} has None hire_rate"
         assert vessel['hire_rate'] > 0, f"{vessel['name']} has invalid hire_rate: {vessel['hire_rate']}"
 
@@ -52,7 +51,6 @@ def test_cargo_structure():
         for field in required_fields:
             assert field in cargo, f"{cargo['name']} missing {field}"
 
-        # Check that freight_rate is not None
         assert cargo['freight_rate'] is not None, f"{cargo['name']} has None freight_rate"
         assert cargo['freight_rate'] > 0, f"{cargo['name']} has invalid freight_rate: {cargo['freight_rate']}"
 
