@@ -3,9 +3,22 @@
 **Team:** Tall Cone
 **Date:** January 2026
 
+## Team Contributions:
+Justin Theodorus: Built the ML/risk adjustment component by engineering features from voyage outputs and scenario inputs, training and comparing models, and producing risk-adjusted profitability signals used in final recommendations. Integrated results back into the overall workflow, ensured reproducibility, and consolidated the report/README so judges could quickly follow the methodology and verify outputs.
+
+Justin Dalva Wicent: Designed the vessel–cargo allocation strategy by generating feasible pairings and selecting assignments that maximize profitability under practical constraints. Iterated on ranking/selection logic, stress-tested decisions under scenarios, and generated the final allocation deliverables in a submission-ready format.
+
+Calvin Ang: Implemented the core voyage calculation engine to compute distance/time components, fuel usage, costs, revenue, and profitability. Modularized the logic into reusable Python code and produced detailed calculation outputs (CSV artifacts) that powered both the analysis and the allocation step.
+
+Zoe Dharmadi: Interpreted the datathon brief and translated it into an end-to-end pipeline (data prep → voyage calculations → profitability metric → allocation → risk adjustment). Defined the key business metric(s) used for decision-making (e.g., TCE / risk-adjusted TCE) and aligned all modeling and selection choices to optimize that objective.
+
+Felicia Joyvina Handoyo: Organized raw inputs into a reproducible project structure and handled data cleaning/standardization across port, vessel, and cargo fields. Managed missing or inconsistent values through documented assumptions and validation checks so the downstream steps were built on reliable inputs.
+
 ---
 
 ## Quick Start (For Judges)
+
+### Insert API Key under (9) in test_run.ipynb
 
 ### Option 1: View Results Immediately
 
