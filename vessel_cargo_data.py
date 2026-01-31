@@ -156,7 +156,6 @@ MARKET_VESSELS = [
     {
         'name': 'ATLANTIC FORTUNE',
         'dwt': 181200,
-        'hire_rate': 16000, 
         'current_port': 'PARADIP',
         'etd': '2026-03-02',
         'war_laden_speed': 13.8,
@@ -178,8 +177,7 @@ MARKET_VESSELS = [
     },
     {
         'name': 'PACIFIC VANGUARD',
-        'dwt': 182050,
-        'hire_rate': 16000, 
+        'dwt': 182050, 
         'current_port': 'CAOFEIDIAN',
         'etd': '2026-02-26',
         'war_laden_speed': 13.6,
@@ -202,7 +200,6 @@ MARKET_VESSELS = [
     {
         'name': 'CORAL EMPEROR',
         'dwt': 180450,
-        'hire_rate': 15800, 
         'current_port': 'ROTTERDAM',
         'etd': '2026-03-05',
         'war_laden_speed': 13.4,
@@ -224,8 +221,7 @@ MARKET_VESSELS = [
     },
     {
         'name': 'EVEREST OCEAN',
-        'dwt': 179950,
-        'hire_rate': 16200, 
+        'dwt': 179950, 
         'current_port': 'XIAMEN',
         'etd': '2026-03-03',
         'war_laden_speed': 13.7,
@@ -247,8 +243,7 @@ MARKET_VESSELS = [
     },
     {
         'name': 'POLARIS SPIRIT',
-        'dwt': 181600,
-        'hire_rate': 16100,  
+        'dwt': 181600, 
         'current_port': 'KANDLA',
         'etd': '2026-02-28',
         'war_laden_speed': 13.9,
@@ -270,8 +265,7 @@ MARKET_VESSELS = [
     },
     {
         'name': 'IRON CENTURY',
-        'dwt': 182100,
-        'hire_rate': 16000, 
+        'dwt': 182100, 
         'current_port': 'PORT TALBOT',
         'etd': '2026-03-09',
         'war_laden_speed': 13.5,
@@ -293,8 +287,7 @@ MARKET_VESSELS = [
     },
     {
         'name': 'MOUNTAIN TRADER',
-        'dwt': 180890,
-        'hire_rate': 15900,  
+        'dwt': 180890, 
         'current_port': 'GWANGYANG',
         'etd': '2026-03-06',
         'war_laden_speed': 13.3,
@@ -317,7 +310,6 @@ MARKET_VESSELS = [
     {
         'name': 'NAVIS PRIDE',
         'dwt': 181400,
-        'hire_rate': 16200, 
         'current_port': 'MUNDRA',
         'etd': '2026-02-27',
         'war_laden_speed': 13.8,
@@ -340,7 +332,6 @@ MARKET_VESSELS = [
     {
         'name': 'AURORA SKY',
         'dwt': 179880,
-        'hire_rate': 15700, 
         'current_port': 'JINGTANG',
         'etd': '2026-03-04',
         'war_laden_speed': 13.4,
@@ -362,8 +353,7 @@ MARKET_VESSELS = [
     },
     {
         'name': 'ZENITH GLORY',
-        'dwt': 182500,
-        'hire_rate': 16300,  
+        'dwt': 182500, 
         'current_port': 'VIZAG',
         'etd': '2026-03-07',
         'war_laden_speed': 13.9,
@@ -385,8 +375,7 @@ MARKET_VESSELS = [
     },
     {
         'name': 'TITAN LEGACY',
-        'dwt': 180650,
-        'hire_rate': 15800,  
+        'dwt': 180650, 
         'current_port': 'JUBAIL',
         'etd': '2026-03-01',
         'war_laden_speed': 13.5,
@@ -416,7 +405,6 @@ MARKET_CARGOES = [
         'quantity': 170000,
         'laycan_start': '2026-03-12',
         'laycan_end': '2026-03-18',
-        'freight_rate': 7.5,
         'load_port': 'DAMPIER',
         'discharge_port': 'QINGDAO',
         'load_rate': 80000,
@@ -432,8 +420,7 @@ MARKET_CARGOES = [
         'commodity': 'Iron Ore',
         'quantity': 190000,
         'laycan_start': '2026-04-03',
-        'laycan_end': '2026-04-10',
-        'freight_rate': 19.0,  
+        'laycan_end': '2026-04-10',  
         'load_port': 'PONTA DA MADEIRA',
         'discharge_port': 'CAOFEIDIAN',
         'load_rate': 60000,
@@ -449,8 +436,7 @@ MARKET_CARGOES = [
         'commodity': 'Iron Ore',
         'quantity': 180000,
         'laycan_start': '2026-03-15',
-        'laycan_end': '2026-03-22',
-        'freight_rate': 19.5,  
+        'laycan_end': '2026-03-22',  
         'load_port': 'SALDANHA BAY',
         'discharge_port': 'TIANJIN',
         'load_rate': 55000,
@@ -466,8 +452,7 @@ MARKET_CARGOES = [
         'commodity': 'Thermal Coal',
         'quantity': 150000,
         'laycan_start': '2026-04-10',
-        'laycan_end': '2026-04-15',
-        'freight_rate': 12.0,  
+        'laycan_end': '2026-04-15', 
         'load_port': 'TABONEO',
         'discharge_port': 'KRISHNAPATNAM',
         'load_rate': 35000,
@@ -484,7 +469,6 @@ MARKET_CARGOES = [
         'quantity': 160000,
         'laycan_start': '2026-03-18',
         'laycan_end': '2026-03-26',
-        'freight_rate': 20.0, 
         'load_port': 'VANCOUVER',
         'discharge_port': 'FANGCHENG',
         'load_rate': 45000,
@@ -501,7 +485,6 @@ MARKET_CARGOES = [
         'quantity': 175000,
         'laycan_start': '2026-04-10',
         'laycan_end': '2026-04-18',
-        'freight_rate': 22.0, 
         'load_port': 'KAMSAR',
         'discharge_port': 'MANGALORE',
         'load_rate': 30000,
@@ -517,8 +500,7 @@ MARKET_CARGOES = [
         'commodity': 'Iron Ore',
         'quantity': 165000,
         'laycan_start': '2026-03-09',
-        'laycan_end': '2026-03-15',
-        'freight_rate': 7.0,  
+        'laycan_end': '2026-03-15', 
         'load_port': 'PORT HEDLAND',
         'discharge_port': 'GWANGYANG',
         'load_rate': 80000,
@@ -535,7 +517,6 @@ MARKET_CARGOES = [
         'quantity': 180000,
         'laycan_start': '2026-03-25',
         'laycan_end': '2026-04-02',
-        'freight_rate': 21.0, 
         'load_port': 'TUBARAO',
         'discharge_port': 'TELUK RUBIAH',
         'load_rate': 60000,
@@ -563,7 +544,7 @@ if __name__ == "__main__":
 
     print(f"\nMarket Vessels: {len(MARKET_VESSELS)} vessels")
     for v in MARKET_VESSELS:
-        print(f"  - {v['name']}: {v['dwt']} DWT, Hire ${v['hire_rate']}/day, at {v['current_port']}")
+        print(f"  - {v['name']}: {v['dwt']} DWT, at {v['current_port']}")
 
     print(f"\nCargill Committed Cargoes: {len(CARGILL_CARGOES)} cargoes")
     for c in CARGILL_CARGOES:
@@ -571,7 +552,7 @@ if __name__ == "__main__":
 
     print(f"\nMarket Cargoes: {len(MARKET_CARGOES)} cargoes")
     for c in MARKET_CARGOES:
-        print(f"  - {c['name']}: {c['quantity']} MT, ${c['freight_rate']}/MT, {c['load_port']}->{c['discharge_port']}")
+        print(f"  - {c['name']}: {c['quantity']} MT, {c['load_port']}->{c['discharge_port']}")
 
     print(f"\n{'='*80}")
     print(f"TOTAL: {len(get_all_vessels())} vessels × {len(get_all_cargoes())} cargoes = {len(get_all_vessels()) * len(get_all_cargoes())} combinations")
