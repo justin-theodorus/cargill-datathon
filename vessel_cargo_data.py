@@ -104,6 +104,7 @@ CARGILL_CARGOES = [
         'customer': 'EGA',
         'commodity': 'Bauxite',
         'quantity': 180000,
+        'qty_tolerance': 0.10,
         'laycan_start': '2026-04-02',
         'laycan_end': '2026-04-10',
         'freight_rate': 23,  
@@ -121,6 +122,9 @@ CARGILL_CARGOES = [
         'customer': 'BHP',
         'commodity': 'Iron Ore',
         'quantity': 160000,
+        'qty_tolerance': 0.10,
+        'half_freight_above_qty': 176000,  # per slide
+        'half_freight_factor': 0.5,        # “half freight”
         'laycan_start': '2026-03-07',
         'laycan_end': '2026-03-11',
         'freight_rate': 9, 
@@ -138,6 +142,7 @@ CARGILL_CARGOES = [
         'customer': 'CSN',
         'commodity': 'Iron Ore',
         'quantity': 180000,
+        'qty_tolerance': 0.10,
         'laycan_start': '2026-04-01',
         'laycan_end': '2026-04-08',
         'freight_rate': 22.30, 
