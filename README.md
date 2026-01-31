@@ -2,6 +2,9 @@ Given : vessels info, cargoes info, port distances, bunker prices,
 
 freight_calculator.py
 
+# Setup Guide
+- Create a virtual environment (using conda/venv)
+- pip install -r requirements.txt
 # 1. Calculate Time                                                                                                                                                                                 
   ballast_days = distance / (speed * 24)  # hours in a day                                                                                                                                            
   laden_days = distance / (speed * 24)                                                                                                                                                                
