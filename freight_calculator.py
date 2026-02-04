@@ -36,16 +36,30 @@ class FreightCalculator:
             distance = row['DISTANCE']
             
             self.distance_dict[(from_port, to_port)] = distance
-            self.distance_dict[(to_port, from_port)] = distance
     
     def get_distance(self, from_port: str, to_port: str) -> float:
         """
-        Get distance between two ports
-        
-        Returns: Distance in nautical miles, or None if not found
+        Get distance between two ports.
+
+        1) Try exact direction (FROM -> TO).
+        2) If missing, try reverse direction (TO -> FROM) as a proxy fallback because the dataset is directionally incomplete (many ports exist only as FROM or TO).
+
+        Returns: Distance in nautical miles, or None if not found.
         """
-        key = (from_port.upper(), to_port.upper())
-        return self.distance_dict.get(key)
+        fp = str(from_port).strip().upper()
+        tp = str(to_port).strip().upper()
+
+        # Exact direction
+        d = self.distance_dict.get((fp, tp))
+        if d is not None:
+            return d
+
+        # Proxy fallback: reverse direction exists in table
+        d_rev = self.distance_dict.get((tp, fp))
+        if d_rev is not None:
+            return d_rev
+
+        return None
     
     def calculate_steaming_time(self, distance: float, speed: float) -> float:
         """

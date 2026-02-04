@@ -88,10 +88,11 @@ def estimate_distance(from_port: str, to_port: str) -> float:
     }
 
     if from_region and to_region:
-        key = tuple(sorted([from_region, to_region]))
-        distance = distance_matrix.get(key)
-        if distance:
-            return distance
+        d = distance_matrix.get((from_region, to_region))
+        if d is None:
+            d = distance_matrix.get((to_region, from_region))
+        if d is not None:
+            return d
 
     if from_region == to_region and from_region is not None:
         return 500
@@ -273,8 +274,8 @@ def main():
     print(f"✓ Loaded bunker prices for {len(bunker_prices)} regions\n")
     
     print("Calculating all vessel-cargo combinations...")
-    all_vessels = get_all_vessels()
-    all_cargoes = get_all_cargoes()
+    all_vessels = CARGILL_VESSELS
+    all_cargoes = CARGILL_CARGOES
     print(f"  - Vessels: {len(all_vessels)} ({len(CARGILL_VESSELS)} Cargill + {len(all_vessels) - len(CARGILL_VESSELS)} Market)")
     print(f"  - Cargoes: {len(all_cargoes)} ({len(CARGILL_CARGOES)} Committed + {len(all_cargoes) - len(CARGILL_CARGOES)} Market)")
 
