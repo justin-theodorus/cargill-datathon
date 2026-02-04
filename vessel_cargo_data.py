@@ -173,7 +173,8 @@ MARKET_VESSELS = [
         'port_vlsf': 2.0,
         'port_mgo': 3.0,
         'bunker_vlsf': 512.4,
-        'bunker_mgo': 38.9
+        'bunker_mgo': 38.9,
+        'hire_rate': 0,
     },
     {
         'name': 'PACIFIC VANGUARD',
@@ -195,7 +196,8 @@ MARKET_VESSELS = [
         'port_vlsf': 1.9,
         'port_mgo': 3.0,
         'bunker_vlsf': 420.3,
-        'bunker_mgo': 51.0
+        'bunker_mgo': 51.0,
+        'hire_rate': 0,
     },
     {
         'name': 'CORAL EMPEROR',
@@ -217,7 +219,8 @@ MARKET_VESSELS = [
         'port_vlsf': 2.0,
         'port_mgo': 3.1,
         'bunker_vlsf': 601.7,
-        'bunker_mgo': 42.3
+        'bunker_mgo': 42.3,
+        'hire_rate': 0,
     },
     {
         'name': 'EVEREST OCEAN',
@@ -239,7 +242,8 @@ MARKET_VESSELS = [
         'port_vlsf': 1.8,
         'port_mgo': 3.0,
         'bunker_vlsf': 478.2,
-        'bunker_mgo': 56.4
+        'bunker_mgo': 56.4,
+        'hire_rate': 0,
     },
     {
         'name': 'POLARIS SPIRIT',
@@ -261,7 +265,8 @@ MARKET_VESSELS = [
         'port_vlsf': 2.0,
         'port_mgo': 3.1,
         'bunker_vlsf': 529.8,
-        'bunker_mgo': 47.1
+        'bunker_mgo': 47.1,
+        'hire_rate': 0,
     },
     {
         'name': 'IRON CENTURY',
@@ -283,7 +288,8 @@ MARKET_VESSELS = [
         'port_vlsf': 2.1,
         'port_mgo': 3.2,
         'bunker_vlsf': 365.6,
-        'bunker_mgo': 60.7
+        'bunker_mgo': 60.7,
+        'hire_rate': 0,
     },
     {
         'name': 'MOUNTAIN TRADER',
@@ -305,7 +311,8 @@ MARKET_VESSELS = [
         'port_vlsf': 2.0,
         'port_mgo': 3.1,
         'bunker_vlsf': 547.1,
-        'bunker_mgo': 32.4
+        'bunker_mgo': 32.4,
+        'hire_rate': 0,
     },
     {
         'name': 'NAVIS PRIDE',
@@ -327,7 +334,8 @@ MARKET_VESSELS = [
         'port_vlsf': 1.8,
         'port_mgo': 3.0,
         'bunker_vlsf': 493.8,
-        'bunker_mgo': 45.2
+        'bunker_mgo': 45.2,
+        'hire_rate': 0,
     },
     {
         'name': 'AURORA SKY',
@@ -349,7 +357,8 @@ MARKET_VESSELS = [
         'port_vlsf': 2.0,
         'port_mgo': 3.1,
         'bunker_vlsf': 422.7,
-        'bunker_mgo': 29.8
+        'bunker_mgo': 29.8,
+        'hire_rate': 0,
     },
     {
         'name': 'ZENITH GLORY',
@@ -371,7 +380,8 @@ MARKET_VESSELS = [
         'port_vlsf': 1.9,
         'port_mgo': 3.1,
         'bunker_vlsf': 502.3,
-        'bunker_mgo': 44.6
+        'bunker_mgo': 44.6,
+        'hire_rate': 0,
     },
     {
         'name': 'TITAN LEGACY',
@@ -393,7 +403,8 @@ MARKET_VESSELS = [
         'port_vlsf': 2.0,
         'port_mgo': 3.0,
         'bunker_vlsf': 388.5,
-        'bunker_mgo': 53.1
+        'bunker_mgo': 53.1,
+        'hire_rate': 0,
     }
 ]
 
