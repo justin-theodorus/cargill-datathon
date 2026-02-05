@@ -88,10 +88,11 @@ def estimate_distance(from_port: str, to_port: str) -> float:
     }
 
     if from_region and to_region:
-        key = tuple(sorted([from_region, to_region]))
-        distance = distance_matrix.get(key)
-        if distance:
-            return distance
+        d = distance_matrix.get((from_region, to_region))
+        if d is None:
+            d = distance_matrix.get((to_region, from_region))
+        if d is not None:
+            return d
 
     if from_region == to_region and from_region is not None:
         return 500
@@ -139,16 +140,17 @@ def calculate_all_combinations(calculator: FreightCalculator,
                                vessels: list,
                                cargoes: list,
                                use_economical: bool = True) -> pd.DataFrame:
-    """
-    Calculate voyage profit for all vessel-cargo combinations
-
-    Returns: DataFrame with all calculations
-    """
     results = []
-    missing_routes = set()  
+    missing_routes = set()
+    skipped_unpriced = 0
 
     for vessel in vessels:
         for cargo in cargoes:
+            # Skip combos where pricing is missing (market vessels/cargoes in your dataset)
+            if vessel.get('hire_rate') is None or cargo.get('freight_rate') is None:
+                skipped_unpriced += 1
+                continue
+
             try:
                 vessel_port = normalize_port_name(vessel['current_port'])
                 load_port = normalize_port_name(cargo['load_port'])
@@ -164,7 +166,7 @@ def calculate_all_combinations(calculator: FreightCalculator,
                 if laden_dist is None:
                     missing_routes.add(f"{load_port} → {discharge_port}")
                     laden_dist = estimate_distance(load_port, discharge_port)
-                
+
                 result = calculator.calculate_voyage_costs(
                     vessel=vessel,
                     cargo=cargo,
@@ -172,26 +174,30 @@ def calculate_all_combinations(calculator: FreightCalculator,
                     laden_distance=laden_dist,
                     use_economical_speed=use_economical
                 )
-                
+
                 result['vessel_current_port'] = vessel['current_port']
                 result['vessel_etd'] = vessel['etd']
                 result['cargo_laycan'] = f"{cargo['laycan_start']} to {cargo['laycan_end']}"
                 result['route'] = f"{vessel['current_port']} -> {cargo['load_port']} -> {cargo['discharge_port']}"
-                
+
                 results.append(result)
-                
+
             except Exception as e:
                 print(f"Error calculating {vessel['name']} x {cargo['name']}: {str(e)}")
 
+    if skipped_unpriced:
+        print(f"\nℹ️  Skipped {skipped_unpriced} unpriced combinations (market hire/freight not provided).")
+
     if missing_routes:
         print(f"\nℹ️  Note: {len(missing_routes)} port-pair distances not in table (using estimates):")
-        for route in sorted(list(missing_routes)[:10]): 
+        for route in sorted(list(missing_routes)[:10]):
             print(f"   • {route}")
         if len(missing_routes) > 10:
             print(f"   ... and {len(missing_routes) - 10} more")
         print(f"\n✓ Used regional distance estimates for missing routes")
 
     return pd.DataFrame(results)
+
 
 
 def find_optimal_allocation(results_df: pd.DataFrame, 
@@ -273,8 +279,8 @@ def main():
     print(f"✓ Loaded bunker prices for {len(bunker_prices)} regions\n")
     
     print("Calculating all vessel-cargo combinations...")
-    all_vessels = get_all_vessels()
-    all_cargoes = get_all_cargoes()
+    all_vessels = CARGILL_VESSELS
+    all_cargoes = CARGILL_CARGOES
     print(f"  - Vessels: {len(all_vessels)} ({len(CARGILL_VESSELS)} Cargill + {len(all_vessels) - len(CARGILL_VESSELS)} Market)")
     print(f"  - Cargoes: {len(all_cargoes)} ({len(CARGILL_CARGOES)} Committed + {len(all_cargoes) - len(CARGILL_CARGOES)} Market)")
 
