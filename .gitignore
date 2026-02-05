@@ -1,4 +1,5 @@
 *pycache*
 .ipynb_checkpoints/
-markdowns/pitch_deck_outline.md
+pitch_deck_outline.md
 presenter_script.md
+markdowns/*
